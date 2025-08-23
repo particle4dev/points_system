@@ -18,7 +18,7 @@ from src.models import (
 )
 from src.models.partner_user_position import ProtocolType, QuantityType
 from sqlmodel import select
-from sqlalchemy import delete # FIX: Import the delete function
+from sqlalchemy import delete
 
 # --- Helper function for printing status ---
 
@@ -27,7 +27,7 @@ def print_position_for_user(session, wallet_address: str):
     statement = (
         select(PartnerUserPosition)
         .where(PartnerUserPosition.wallet_address == wallet_address)
-        .order_by(PartnerUserPosition.protocol_slug, PartnerUserPosition.quantity_type)
+        .order_by(PartnerUserPosition.protocol_slug, PartnerUserPosition.quantity_type, PartnerUserPosition.token_address)
     )
     records = session.exec(statement).all()
     print(f"\n💰 Current Positions for {wallet_address}:")
@@ -36,6 +36,7 @@ def print_position_for_user(session, wallet_address: str):
         return
     for record in records:
         print(f"  - Protocol: {record.protocol_slug} | Type: {record.quantity_type.value}")
+        print(f"    Token: {record.token_address}")
         print(f"    Raw Quantity: {record.quantity} | USD Value: {record.quantity_usd:.2f}")
 
 # --- The Main Test Function ---
@@ -48,88 +49,106 @@ def test_partner_position_trigger():
     # --- Test Configuration ---
     ALICE_WALLET = "0xA11ce00000000000000000000000000000000001"
     BOB_WALLET = "0xB0b0000000000000000000000000000000000002"
-    PROTOCOL_SLUG = "hyperswap"
+    
+    # Define protocol slugs
+    HYPERSWAP_SLUG = "hyperswap"
+    HYPURRFI_SLUG = "hypurrfi"
+    
+    # Define token/asset addresses
+    HYPERSWAP_POOL_ADDRESS = "0xfde5b0626fc80e36885e2fa9cd5ad9d7768d725c" # Represents the LP token
+    HYPE_TOKEN_ADDRESS = "0xHYPE_TOKEN_ADDRESS_HERE"
+    STHYPE_TOKEN_ADDRESS = "0xSTHYPE_TOKEN_ADDRESS_HERE"
     
     with get_session() as session:
         try:
             print("--- Trigger Test Initial State ---")
             # Clear any existing test data for these wallets to ensure a clean run
-            
-            # --- FIX: Replace session.query().delete() with session.execute(delete()) ---
             delete_statement = delete(PartnerUserPosition).where(
                 PartnerUserPosition.wallet_address.in_([ALICE_WALLET, BOB_WALLET])
             )
             session.execute(delete_statement)
-            # --- END FIX ---
-            
             session.commit()
             
             print_position_for_user(session, ALICE_WALLET)
             print_position_for_user(session, BOB_WALLET)
 
-            # --- 1. INSERT Test: Alice adds liquidity (Creates a new position) ---
-            print(f"\n\n--- 1. Testing INSERT (Create): Alice adds liquidity ---")
-            # Use a unique tx_hash for each test run to avoid unique constraint violations
+            # --- 1. INSERT (Create): Alice adds HyperSwap liquidity ---
+            print(f"\n\n--- 1. Testing INSERT (Create): Alice adds HyperSwap LP ---")
             alice_deposit = PartnerProtocolEvent(
                 tx_hash=f"0xa001-test-{datetime.now().timestamp()}",
-                block_number=2000,
-                timestamp=datetime.now(timezone.utc),
-                wallet_address=ALICE_WALLET,
-                protocol_slug=PROTOCOL_SLUG,
-                protocol_type=ProtocolType.DEX_UNISWAPV3,
-                quantity_type=QuantityType.LP,
-                quantity_change=Decimal("100000"),
-                quantity_change_usd=Decimal("10000.00")
+                block_number=2000, timestamp=datetime.now(timezone.utc),
+                wallet_address=ALICE_WALLET, protocol_slug=HYPERSWAP_SLUG,
+                protocol_type=ProtocolType.DEX_UNISWAPV3, quantity_type=QuantityType.LP,
+                token_address=HYPERSWAP_POOL_ADDRESS,
+                quantity_change=Decimal("100000"), quantity_change_usd=Decimal("10000.00")
             )
             session.add(alice_deposit)
             session.commit()
-            
             print("✅ Event committed. Position should be created.")
             print_position_for_user(session, ALICE_WALLET)
 
-            # --- 2. UPDATE Test: Alice withdraws all liquidity (Updates position to zero) ---
-            print(f"\n\n--- 2. Testing INSERT (Update): Alice withdraws all liquidity ---")
+            # --- 2. INSERT (Update): Alice withdraws all HyperSwap liquidity ---
+            print(f"\n\n--- 2. Testing INSERT (Update): Alice withdraws all HyperSwap LP ---")
             alice_withdrawal = PartnerProtocolEvent(
                 tx_hash=f"0xa002-test-{datetime.now().timestamp()}",
-                block_number=2500,
-                timestamp=datetime.now(timezone.utc),
-                wallet_address=ALICE_WALLET,
-                protocol_slug=PROTOCOL_SLUG,
-                protocol_type=ProtocolType.DEX_UNISWAPV3,
-                quantity_type=QuantityType.LP,
-                quantity_change=Decimal("-100000"), # Note the negative value
-                quantity_change_usd=Decimal("-10000.00")
+                block_number=2500, timestamp=datetime.now(timezone.utc),
+                wallet_address=ALICE_WALLET, protocol_slug=HYPERSWAP_SLUG,
+                protocol_type=ProtocolType.DEX_UNISWAPV3, quantity_type=QuantityType.LP,
+                token_address=HYPERSWAP_POOL_ADDRESS,
+                quantity_change=Decimal("-100000"), quantity_change_usd=Decimal("-10000.00")
             )
             session.add(alice_withdrawal)
             session.commit()
-            
             print("✅ Event committed. Position should be updated to zero.")
             print_position_for_user(session, ALICE_WALLET)
 
-            # --- 3. INSERT Test: Bob adds liquidity (Creates a new, separate position) ---
-            print(f"\n\n--- 3. Testing INSERT (Create): Bob adds liquidity ---")
+            # --- 3. INSERT (Create): Bob adds HyperSwap liquidity ---
+            print(f"\n\n--- 3. Testing INSERT (Create): Bob adds HyperSwap LP ---")
             bob_deposit = PartnerProtocolEvent(
                 tx_hash=f"0xb001-test-{datetime.now().timestamp()}",
-                block_number=3000,
-                timestamp=datetime.now(timezone.utc),
-                wallet_address=BOB_WALLET,
-                protocol_slug=PROTOCOL_SLUG,
-                protocol_type=ProtocolType.DEX_UNISWAPV3,
-                quantity_type=QuantityType.LP,
-                quantity_change=Decimal("150000"),
-                quantity_change_usd=Decimal("18000.00")
+                block_number=3000, timestamp=datetime.now(timezone.utc),
+                wallet_address=BOB_WALLET, protocol_slug=HYPERSWAP_SLUG,
+                protocol_type=ProtocolType.DEX_UNISWAPV3, quantity_type=QuantityType.LP,
+                token_address=HYPERSWAP_POOL_ADDRESS,
+                quantity_change=Decimal("150000"), quantity_change_usd=Decimal("18000.00")
             )
             session.add(bob_deposit)
             session.commit()
-
             print("✅ Event committed. Bob's position should be created.")
             print_position_for_user(session, BOB_WALLET)
-            # Also check Alice again to ensure her position was not affected
+
+            # --- 4. INSERT (Create): Alice supplies HYPE to HypurrFi ---
+            print(f"\n\n--- 4. Testing INSERT (Multi-token): Alice supplies HYPE to HypurrFi ---")
+            alice_hype_supply = PartnerProtocolEvent(
+                tx_hash=f"0xc001-test-{datetime.now().timestamp()}",
+                block_number=3500, timestamp=datetime.now(timezone.utc),
+                wallet_address=ALICE_WALLET, protocol_slug=HYPURRFI_SLUG,
+                protocol_type=ProtocolType.LENDING_HYPURRFI, quantity_type=QuantityType.LP,
+                token_address=HYPE_TOKEN_ADDRESS,
+                quantity_change=Decimal("500000000000000000000"), quantity_change_usd=Decimal("500.00")
+            )
+            session.add(alice_hype_supply)
+            session.commit()
+            print("✅ Event committed. Alice should now have a new HypurrFi position.")
+            print_position_for_user(session, ALICE_WALLET)
+
+            # --- 5. INSERT (Create): Alice supplies stHYPE to HypurrFi ---
+            print(f"\n\n--- 5. Testing INSERT (Multi-token): Alice supplies stHYPE to HypurrFi ---")
+            alice_sthype_supply = PartnerProtocolEvent(
+                tx_hash=f"0xd001-test-{datetime.now().timestamp()}",
+                block_number=4000, timestamp=datetime.now(timezone.utc),
+                wallet_address=ALICE_WALLET, protocol_slug=HYPURRFI_SLUG,
+                protocol_type=ProtocolType.LENDING_HYPURRFI, quantity_type=QuantityType.LP,
+                token_address=STHYPE_TOKEN_ADDRESS,
+                quantity_change=Decimal("200000000000000000000"), quantity_change_usd=Decimal("220.00")
+            )
+            session.add(alice_sthype_supply)
+            session.commit()
+            print("✅ Event committed. Alice should have a second, distinct HypurrFi position.")
             print_position_for_user(session, ALICE_WALLET)
 
         finally:
             print("\n\n--- Test Complete ---")
-            # Cleanup after the test run to ensure idempotency
             print("--- Cleaning up test data ---")
             cleanup_statement = delete(PartnerUserPosition).where(
                 PartnerUserPosition.wallet_address.in_([ALICE_WALLET, BOB_WALLET])
