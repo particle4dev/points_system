@@ -25,14 +25,14 @@ CREATE OR REPLACE FUNCTION update_partner_user_position_from_event()
 RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO partner_user_position (
-        id, wallet_address, protocol_slug, protocol_type, quantity_type,
+        id, wallet_address, protocol_slug, protocol_type, quantity_type, token_address,
         quantity, quantity_usd, created_at, updated_at
     )
     VALUES (
         gen_random_uuid(), NEW.wallet_address, NEW.protocol_slug, NEW.protocol_type,
-        NEW.quantity_type, NEW.quantity_change, NEW.quantity_change_usd, NOW(), NOW()
+        NEW.quantity_type, NEW.token_address, NEW.quantity_change, NEW.quantity_change_usd, NOW(), NOW()
     )
-    ON CONFLICT (wallet_address, protocol_slug, quantity_type)
+    ON CONFLICT (wallet_address, protocol_slug, quantity_type, token_address)
     DO UPDATE SET
         quantity = partner_user_position.quantity + NEW.quantity_change,
         quantity_usd = partner_user_position.quantity_usd + NEW.quantity_change_usd,

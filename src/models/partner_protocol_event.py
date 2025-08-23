@@ -1,5 +1,5 @@
 # python-training/lessons/points_system/src/models/partner_protocol_event.py
-    
+
 from datetime import datetime
 from decimal import Decimal
 from uuid import UUID, uuid4
@@ -11,8 +11,8 @@ from .partner_user_position import ProtocolType, QuantityType
 class PartnerProtocolEvent(SQLModel, table=True):
     """
     Core immutable ledger for all partner protocol events. It stores the CHANGE
-    in both raw quantity and USD value for a specific QuantityType, which 
-    triggers updates to the PartnerUserPosition table.
+    in both raw quantity and USD value for a specific token and QuantityType, 
+    which triggers updates to the PartnerUserPosition table.
     """
     __tablename__ = "partner_protocol_event"
 
@@ -25,6 +25,10 @@ class PartnerProtocolEvent(SQLModel, table=True):
     protocol_type: ProtocolType = Field(sa_column=sa.Column(sa.Enum(ProtocolType), nullable=False))
     quantity_type: QuantityType = Field(sa_column=sa.Column(sa.Enum(QuantityType), nullable=False))
     
+    # The specific token this event corresponds to.
+    # token_address: str = Field(foreign_key="tokens.address", index=True, nullable=False)
+    token_address: str = Field(index=False, nullable=False)
+
     # The change in raw token quantity for this event (e.g., in wei).
     quantity_change: Decimal = Field(sa_column=sa.Column(sa.Numeric(78, 0), nullable=False))
 
