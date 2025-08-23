@@ -1,0 +1,73 @@
+{
+"reward_sessions": [
+	{
+		"session_id" : "6d709fd9-0955-4e28-9eed-729aa836fa60",
+		"session_name" : "Session 1",
+		"start_date" : "2024-06-20T05:00:00.000Z",
+		"end_date" : "2024-08-28T09:21:56.496Z",
+		"partner_name" : "Harmonix",
+		"update_date" : "2024-08-28T07:59:52.815Z",
+		"points_distributed" : 902143.6537661974,
+		"season_type" : "season_1"
+	},
+	{
+		"session_id" : "6d709fd9-0955-4e28-9eed-729aa836fa61",
+		"session_name" : "Session 2",
+		"start_date" : "2024-08-31T17:00:00.000Z",
+		"end_date" : "2024-11-08T21:22:02.899Z",
+		"partner_name" : "Harmonix",
+		"update_date" : "2024-11-08T20:00:19.444Z",
+		"points_distributed" : 710127.942456112,
+		"season_type" : "season_1"
+	},
+	{
+		"session_id" : "6d709fd9-0955-4e28-9eed-729aa836fa62",
+		"session_name" : "Session 3",
+		"start_date" : "2024-11-08T21:22:02.899Z",
+		"end_date" : "2025-02-17T17:01:02.910Z",
+		"partner_name" : "Harmonix",
+		"update_date" : "2025-02-17T16:00:59.695Z",
+		"points_distributed" : 7830956.554033924,
+		"season_type" : "season_1"
+	},
+	{
+		"session_id" : "7d2538a7-076e-40b5-ac80-8941486f5d69",
+		"session_name" : "Harmonix-mkt",
+		"start_date" : "2025-05-15T21:11:09.129Z",
+		"end_date" : "2025-05-15T21:11:09.129Z",
+		"partner_name" : "Harmonix-mkt",
+		"update_date" : null,
+		"points_distributed" : 1026050.269999999,
+		"season_type" : "season_1"
+	},
+	{
+		"session_id" : "28b95ac7-3ce7-4a39-b5ce-cbc7b9794668",
+		"session_name" : "Staking",
+		"start_date" : "2025-03-26T17:00:00.000Z",
+		"end_date" : null,
+		"partner_name" : "Staking",
+		"update_date" : "2025-08-18T08:15:57.400Z",
+		"points_distributed" : 9187488.659399888,
+		"season_type" : "season_1"
+	},
+	{
+		"session_id" : "b5e05ecd-a21c-4d40-8425-c5c2023a6922",
+		"session_name" : "Season 2",
+		"start_date" : "2025-03-03T22:00:00.000Z",
+		"end_date" : null,
+		"partner_name" : "Harmonix",
+		"update_date" : "2025-08-18T08:10:55.791Z",
+		"points_distributed" : 1.7242678642598167E7,
+		"season_type" : "season_2"
+	},
+	{
+		"session_id" : "eba26f32-4f4e-4091-b724-4e37abbe886f",
+		"session_name" : "Harmonix-mkt",
+		"start_date" : "2025-05-15T21:11:09.129Z",
+		"end_date" : null,
+		"partner_name" : "Harmonix-mkt",
+		"update_date" : "2025-08-18T05:21:38.526Z",
+		"points_distributed" : 139347.155233467,
+		"season_type" : "season_2"
+	}
+]}

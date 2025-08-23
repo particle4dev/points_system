@@ -1,0 +1,6 @@
+sync:
+  defaults:
+    mode: two-way-resolved
+    ignore:
+      paths:
+        - __pycache__
