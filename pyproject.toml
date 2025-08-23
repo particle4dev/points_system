@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "points-system"
+version = "0.1.0"
+description = ""
+authors = ["Nam Hoang <particle4dev@gmail.com>"]
+readme = "README.md"
+packages = [{include = "points_system", from = "src"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+alembic = "^1.16.1"
+dotenv = "^0.9.9"
+sqlmodel = "^0.0.24"
+psycopg = {extras = ["binary"], version = "^3.2.9"}
+pydantic = "^2.11.7"
+pydantic-settings = "^2.9.1"
+click = "^8.2.1"
+
+[tool.poetry.scripts]
+dev = "watchdog.watchmedo:main"
+
+[tool.poetry.group.dev.dependencies]
+watchdog = "^6.0.0"
+pyproject-autoflake = "^1.0.2"
+
+[tool.autoflake]
+check = false
+in-place = true
+recursive = true
+exclude = "*.pyc,*/.venv/*"
+remove-all-unused-imports = true
+remove-unused-variables = true
+ignore-init-module-imports = true
+expand-star-imports = true
+remove-duplicate-keys = true
+verbose = ["0"]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
