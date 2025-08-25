@@ -29,7 +29,7 @@ DECLARE
     v_counterparty_address VARCHAR;
     v_counterparty_total_shares NUMERIC;
 BEGIN
-    -- Get the user and vault from the newly inserted/updated row in the history table
+    -- Get the user and vault from the newly inserted row
     v_user_address := NEW.user_address;
     v_vault_id := NEW.vault_id;
 
@@ -46,9 +46,16 @@ BEGIN
     FROM vaults_user_position_history
     WHERE user_address = v_user_address AND vault_id = v_vault_id;
 
-    -- Upsert the new total_shares into the snapshot table for the primary user
-    INSERT INTO vaults_user_position (user_address, vault_id, total_shares, last_updated)
-    VALUES (v_user_address, v_vault_id, v_total_shares, NOW())
+    -- Upsert the new total_shares into the snapshot table.
+    -- FIX: Provide default 0 values for all NOT NULL columns on initial insert.
+    INSERT INTO vaults_user_position (
+        user_address, vault_id, total_shares, total_assets_value, 
+        unrealized_pnl, realized_pnl, average_cost_basis, last_updated
+    )
+    VALUES (
+        v_user_address, v_vault_id, v_total_shares, 0, 
+        0, 0, 0, NOW()
+    )
     ON CONFLICT (user_address, vault_id)
     DO UPDATE SET
         total_shares = EXCLUDED.total_shares,
@@ -57,8 +64,6 @@ BEGIN
     -- === Handle the counterparty for TRANSFER events ===
     v_counterparty_address := NEW.counterparty_address;
     
-    -- If there's a counterparty, we need to update their balance as well.
-    -- This is crucial for TRANSFER_OUT, as the sender's balance also changes.
     IF v_counterparty_address IS NOT NULL THEN
         SELECT
             COALESCE(SUM(
@@ -72,9 +77,15 @@ BEGIN
         FROM vaults_user_position_history
         WHERE user_address = v_counterparty_address AND vault_id = v_vault_id;
         
-        -- Upsert the new total_shares into the snapshot table for the counterparty
-        INSERT INTO vaults_user_position (user_address, vault_id, total_shares, last_updated)
-        VALUES (v_counterparty_address, v_vault_id, v_counterparty_total_shares, NOW())
+        -- FIX: Also provide default 0 values here for the counterparty.
+        INSERT INTO vaults_user_position (
+            user_address, vault_id, total_shares, total_assets_value, 
+            unrealized_pnl, realized_pnl, average_cost_basis, last_updated
+        )
+        VALUES (
+            v_counterparty_address, v_vault_id, v_counterparty_total_shares, 0, 
+            0, 0, 0, NOW()
+        )
         ON CONFLICT (user_address, vault_id)
         DO UPDATE SET
             total_shares = EXCLUDED.total_shares,
