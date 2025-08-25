@@ -13,7 +13,7 @@ from src.seed.partners import create_partners, delete_partners
 from src.seed.partner_uniswapv3_lps import create_partner_uniswapv3_lps, delete_partner_uniswapv3_lps
 from src.seed.partner_uniswapv3_ticks import create_partner_uniswapv3_ticks, delete_partner_uniswapv3_ticks
 from src.seed.partner_pool_uniswapv3 import create_partner_pool_uniswapv3, delete_partner_pool_uniswapv3
-from src.seed.partner_uniswapv3_events import create_partner_uniswapv3_events, delete_partner_uniswapv3_events
+# from src.seed.partner_uniswapv3_events import create_partner_uniswapv3_events, delete_partner_uniswapv3_events
 from src.seed.points_point_types import create_points_point_types, delete_points_point_types
 from src.seed.points_campaigns import create_points_campaigns, delete_points_campaigns
 from src.seed.points_user_campaign_points import create_user_campaign_points, delete_user_campaign_points
@@ -42,7 +42,7 @@ def create():
     create_partner_pool_uniswapv3()
     create_partner_uniswapv3_lps()
     create_partner_uniswapv3_ticks()
-    create_partner_uniswapv3_events()
+    # create_partner_uniswapv3_events()
     
     # User and campaign data
     create_points_campaigns()
@@ -70,7 +70,7 @@ def delete():
     delete_points_point_types()
 
     # The rest of the partner context
-    delete_partner_uniswapv3_events()
+    # delete_partner_uniswapv3_events()
     delete_partner_uniswapv3_ticks()
     delete_partner_uniswapv3_lps()
     delete_partner_pool_uniswapv3()
