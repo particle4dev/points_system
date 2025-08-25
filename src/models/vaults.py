@@ -6,6 +6,7 @@ import uuid
 
 import sqlmodel
 from sqlmodel import Field, SQLModel
+import sqlalchemy as sa
 
 # Database model for the main vault table
 class Vault(SQLModel, table=True):
