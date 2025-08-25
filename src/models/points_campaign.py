@@ -27,6 +27,9 @@ class PointsCampaign(SQLModel, table=True):
     
     partner_slug: str = Field(nullable=False)
     
+    # The specific pool address this campaign is associated with (if any)
+    pool_address: str = Field(nullable=False)
+
     tags: List[str] = Field(
         default_factory=list,
         sa_column=sa.Column(postgresql.ARRAY(sa.String), nullable=False, server_default="{}"),
