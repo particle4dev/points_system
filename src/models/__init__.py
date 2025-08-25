@@ -16,7 +16,7 @@ from .partner import Partner
 from .partner_pool import PartnerPool
 from .partner_uniswapv3_lp import PartnerUniswapV3LP
 from .partner_uniswapv3_tick import PartnerUniswapV3Tick
-from .partner_uniswapv3_event import PartnerUniswapV3Event
+# from .partner_uniswapv3_event import PartnerUniswapV3Event
 from .partner_pool_uniswapv3 import PartnerPoolUniswapV3
 from .partner_user_position import PartnerUserPosition
 from .partner_protocol_event import PartnerProtocolEvent
@@ -34,7 +34,7 @@ __all__ = [
     "Token",
     "PartnerUniswapV3LP",
     "PartnerUniswapV3Tick",
-    "PartnerUniswapV3Event",
+    # "PartnerUniswapV3Event",
     "PartnerUserPosition",
     "PartnerProtocolEvent",
     "PointsCampaign",

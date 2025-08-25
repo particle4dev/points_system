@@ -1,7 +1,7 @@
 """Add PartnerPoolUniswapV3 table
 
 Revision ID: 97d8dfef59d8
-Revises: 6736db302973
+Revises: e3b89ce7fd7e
 Create Date: 2025-08-20 15:17:36.262380
 
 """
@@ -14,7 +14,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = '97d8dfef59d8'
-down_revision: Union[str, None] = '6736db302973'
+down_revision: Union[str, None] = 'e3b89ce7fd7e'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

@@ -57,5 +57,5 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_partner_uniswapv3_events_event_type'), table_name='partner_uniswapv3_events')
     op.drop_index(op.f('ix_partner_uniswapv3_events_block_number'), table_name='partner_uniswapv3_events')
     op.drop_table('partner_uniswapv3_events')
-    event_type_enum.drop(op.get_bind())
+    event_type_enum.drop(op.get_bind(), checkfirst=True)
     # ### end Alembic commands ###

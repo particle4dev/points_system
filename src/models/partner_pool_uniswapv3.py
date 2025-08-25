@@ -18,6 +18,7 @@ class PartnerPoolUniswapV3(SQLModel, table=True):
     __tablename__ = "partner_pool_uniswapv3"
 
     id: Optional[int] = Field(default=None, primary_key=True)
+
     pool_slug: str = Field(
         sa_column=sa.Column(sa.String, sa.ForeignKey("partner_pool.slug"), unique=True, index=True, nullable=False)
     )
