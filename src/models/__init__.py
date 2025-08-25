@@ -26,6 +26,9 @@ from .points_user_campaign_points import PointsUserCampaignPoints
 from .points_user_point import PointsUserPoint
 from .points_user_point_history import PointsUserPointHistory
 from .points_partner_snapshot import PointsPartnerSnapshot
+from .vaults import Vault
+from .vaults_user_position_history import VaultsUserPositionHistory
+from .vaults_user_position import VaultsUserPosition
 
 __all__ = [
     "Partner",
@@ -43,4 +46,7 @@ __all__ = [
     "PointsUserPoint",
     "PointsUserPointHistory",
     "PointsPartnerSnapshot",
+    "Vault",
+    "VaultsUserPositionHistory",
+    "VaultsUserPosition",
 ]
