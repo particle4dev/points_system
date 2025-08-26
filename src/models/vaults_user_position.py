@@ -13,9 +13,5 @@ class VaultsUserPosition(SQLModel, table=True):
 
     # The most critical field for reward calculation
     total_shares: float = Field(default=0, description="The current total number of shares held by the user.")
-    
-    # The current value of the user's holdings in the underlying asset
-    # Calculated as: total_shares * current_share_price_of_vault
-    total_assets_value: float = Field(default=0)
 
     last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
