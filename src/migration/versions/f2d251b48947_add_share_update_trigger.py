@@ -66,13 +66,13 @@ BEGIN
     
     IF v_counterparty_address IS NOT NULL THEN
         SELECT
-            # COALESCE(SUM(
-            #     CASE
-            #         WHEN transaction_type IN ('DEPOSIT', 'TRANSFER_IN') THEN shares_amount
-            #         WHEN transaction_type IN ('WITHDRAWAL', 'TRANSFER_OUT') THEN -shares_amount
-            #         ELSE 0
-            #     END
-            # ), 0)
+            -- COALESCE(SUM(
+            --    CASE
+            --        WHEN transaction_type IN ('DEPOSIT', 'TRANSFER_IN') THEN shares_amount
+            --        WHEN transaction_type IN ('WITHDRAWAL', 'TRANSFER_OUT') THEN -shares_amount
+            --        ELSE 0
+            --    END
+            -- ), 0)
             COALESCE(SUM(
                 CASE
                     -- These events INCREASE a user's total position

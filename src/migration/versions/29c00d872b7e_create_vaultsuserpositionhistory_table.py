@@ -22,7 +22,7 @@ depends_on: Union[str, Sequence[str], None] = None
 # --- SOLUTION STEP 1: Define the ENUM type object outside the functions ---
 # This allows us to reference it in both upgrade and downgrade.
 position_history_type_enum = postgresql.ENUM(
-    'DEPOSIT', 'WITHDRAWAL', 'TRANSFER_IN', 'TRANSFER_OUT', 
+    'DEPOSIT', 'WITHDRAWAL', 'TRANSFER_IN', 'TRANSFER_OUT', 'STAKE_TO_POOL', 'UNSTAKE_FROM_POOL',
     name='positionhistorytype'
 )
 
