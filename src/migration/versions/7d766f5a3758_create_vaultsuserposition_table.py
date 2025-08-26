@@ -29,7 +29,7 @@ def upgrade() -> None:
     sa.Column('total_assets_value', sa.Float(), nullable=False),
     sa.Column('unrealized_pnl', sa.Float(), nullable=False),
     sa.Column('realized_pnl', sa.Float(), nullable=False),
-    sa.Column('average_cost_basis', sa.Float(), nullable=False),
+    # sa.Column('average_cost_basis', sa.Float(), nullable=False),
     sa.Column('last_updated', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['vault_id'], ['vaults.id'], ),
     sa.PrimaryKeyConstraint('user_address', 'vault_id')

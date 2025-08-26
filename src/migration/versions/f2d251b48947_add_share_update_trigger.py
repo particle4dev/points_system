@@ -11,6 +11,10 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
+"""
+Its job is to ensure that whenever a new transaction record is added to the vaults_user_position_history table, the user's total share balance in the vaults_user_position summary table is instantly and automatically recalculated and updated.
+
+"""
 
 # revision identifiers, used by Alembic.
 revision: str = 'f2d251b48947'
@@ -50,11 +54,11 @@ BEGIN
     -- FIX: Provide default 0 values for all NOT NULL columns on initial insert.
     INSERT INTO vaults_user_position (
         user_address, vault_id, total_shares, total_assets_value, 
-        unrealized_pnl, realized_pnl, average_cost_basis, last_updated
+        unrealized_pnl, realized_pnl, last_updated
     )
     VALUES (
         v_user_address, v_vault_id, v_total_shares, 0, 
-        0, 0, 0, NOW()
+        0, 0, NOW()
     )
     ON CONFLICT (user_address, vault_id)
     DO UPDATE SET
@@ -95,11 +99,11 @@ BEGIN
         -- FIX: Also provide default 0 values here for the counterparty.
         INSERT INTO vaults_user_position (
             user_address, vault_id, total_shares, total_assets_value, 
-            unrealized_pnl, realized_pnl, average_cost_basis, last_updated
+            unrealized_pnl, realized_pnl, last_updated
         )
         VALUES (
             v_counterparty_address, v_vault_id, v_counterparty_total_shares, 0, 
-            0, 0, 0, NOW()
+            0, 0, NOW()
         )
         ON CONFLICT (user_address, vault_id)
         DO UPDATE SET
