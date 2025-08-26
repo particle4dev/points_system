@@ -11,6 +11,10 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
+"""
+Its job is to ensure that whenever a new transaction record is added to the vaults_user_position_history table, the user's total share balance in the vaults_user_position summary table is instantly and automatically recalculated and updated.
+
+"""
 
 # revision identifiers, used by Alembic.
 revision: str = 'f2d251b48947'
@@ -49,12 +53,10 @@ BEGIN
     -- Upsert the new total_shares into the snapshot table.
     -- FIX: Provide default 0 values for all NOT NULL columns on initial insert.
     INSERT INTO vaults_user_position (
-        user_address, vault_id, total_shares, total_assets_value, 
-        unrealized_pnl, realized_pnl, average_cost_basis, last_updated
+        user_address, vault_id, total_shares, last_updated
     )
     VALUES (
-        v_user_address, v_vault_id, v_total_shares, 0, 
-        0, 0, 0, NOW()
+        v_user_address, v_vault_id, v_total_shares, NOW()
     )
     ON CONFLICT (user_address, vault_id)
     DO UPDATE SET
@@ -66,10 +68,25 @@ BEGIN
     
     IF v_counterparty_address IS NOT NULL THEN
         SELECT
+            -- COALESCE(SUM(
+            --    CASE
+            --        WHEN transaction_type IN ('DEPOSIT', 'TRANSFER_IN') THEN shares_amount
+            --        WHEN transaction_type IN ('WITHDRAWAL', 'TRANSFER_OUT') THEN -shares_amount
+            --        ELSE 0
+            --    END
+            -- ), 0)
             COALESCE(SUM(
                 CASE
+                    -- These events INCREASE a user's total position
                     WHEN transaction_type IN ('DEPOSIT', 'TRANSFER_IN') THEN shares_amount
+                    
+                    -- These events DECREASE a user's total position
                     WHEN transaction_type IN ('WITHDRAWAL', 'TRANSFER_OUT') THEN -shares_amount
+                    
+                    -- CRITICAL: Staking/unstaking events DO NOT change the total position,
+                    -- so they are treated as a change of 0.
+                    WHEN transaction_type IN ('STAKE_TO_POOL', 'UNSTAKE_FROM_POOL') THEN 0
+                    
                     ELSE 0
                 END
             ), 0)
@@ -79,12 +96,10 @@ BEGIN
         
         -- FIX: Also provide default 0 values here for the counterparty.
         INSERT INTO vaults_user_position (
-            user_address, vault_id, total_shares, total_assets_value, 
-            unrealized_pnl, realized_pnl, average_cost_basis, last_updated
+            user_address, vault_id, total_shares, last_updated
         )
         VALUES (
-            v_counterparty_address, v_vault_id, v_counterparty_total_shares, 0, 
-            0, 0, 0, NOW()
+            v_counterparty_address, v_vault_id, v_counterparty_total_shares, NOW()
         )
         ON CONFLICT (user_address, vault_id)
         DO UPDATE SET
