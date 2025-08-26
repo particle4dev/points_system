@@ -53,12 +53,10 @@ BEGIN
     -- Upsert the new total_shares into the snapshot table.
     -- FIX: Provide default 0 values for all NOT NULL columns on initial insert.
     INSERT INTO vaults_user_position (
-        user_address, vault_id, total_shares, total_assets_value, 
-        unrealized_pnl, last_updated
+        user_address, vault_id, total_shares, total_assets_value, last_updated
     )
     VALUES (
-        v_user_address, v_vault_id, v_total_shares, 0, 
-        0, NOW()
+        v_user_address, v_vault_id, v_total_shares, 0, NOW()
     )
     ON CONFLICT (user_address, vault_id)
     DO UPDATE SET
@@ -98,12 +96,10 @@ BEGIN
         
         -- FIX: Also provide default 0 values here for the counterparty.
         INSERT INTO vaults_user_position (
-            user_address, vault_id, total_shares, total_assets_value, 
-            unrealized_pnl, last_updated
+            user_address, vault_id, total_shares, total_assets_value, last_updated
         )
         VALUES (
-            v_counterparty_address, v_vault_id, v_counterparty_total_shares, 0, 
-            0, NOW()
+            v_counterparty_address, v_vault_id, v_counterparty_total_shares, 0, NOW()
         )
         ON CONFLICT (user_address, vault_id)
         DO UPDATE SET

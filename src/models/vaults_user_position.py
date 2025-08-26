@@ -18,7 +18,4 @@ class VaultsUserPosition(SQLModel, table=True):
     # Calculated as: total_shares * current_share_price_of_vault
     total_assets_value: float = Field(default=0)
 
-    # PnL metrics calculated from the history table
-    unrealized_pnl: float = Field(default=0)
-
     last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
