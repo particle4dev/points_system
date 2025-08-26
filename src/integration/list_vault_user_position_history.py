@@ -63,26 +63,30 @@ def list_vault_position_history():
             # Add a header for each new vault
             if vault.name != current_vault_name:
                 current_vault_name = vault.name
-                # Reset user when vault changes to print the user header again
-                current_user_address = None
-                print(f"\n{'='*25}\n Vault: {current_vault_name}\n{'='*25}")
+                current_user_address = None  # Reset user for new vault section
+                print(f"\n{'='*70}\n Vault: {current_vault_name}\n{'='*70}")
 
             # Add a sub-header for each new user within a vault
             if history.user_address != current_user_address:
                 current_user_address = history.user_address
-                print(f"\n  -- User: {current_user_address} --")
+                print(f"\n  --- User Log: {current_user_address} ---\n")
 
-            # Print the detailed transaction line
-            timestamp_str = history.timestamp.strftime('%Y-%m-%d %H:%M:%S')
-            tx_type_str = history.transaction_type.value.ljust(18) # Pad for alignment
-            shares_str = f"{history.shares_amount:,.4f}".rjust(14) # Pad for alignment
-            price_str = f"{history.share_price_at_transaction:,.4f}".rjust(10)
+            # --- Print the detailed, multi-line transaction log entry ---
+            print(f"  Record ID:         {history.id}")
+            print(f"  Timestamp:         {history.timestamp.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+            print(f"  Transaction Type:  {history.transaction_type.value}")
+            print(f"  Transaction Hash:  {history.transaction_hash}")
+            # print("-" * 70)
+            # Use placeholder token names for clarity
+            print(f"  Shares (haHype):   {history.shares_amount:,.4f}")
+            print(f"  Share Price:       {history.share_price_at_transaction:,.4f} HYPE per haHype")
+            print(f"  Asset Value (HYPE):{history.asset_amount:,.4f}")
 
-            print(
-                f"    {timestamp_str} | Type: {tx_type_str} | Shares: {shares_str} | "
-                f"Price: {price_str} | Hash: {history.transaction_hash[:10]}..."
-            )
+            if history.counterparty_address:
+                print(f"  Counterparty:      {history.counterparty_address}")
 
+            print("-" * 70)
+            print() # Add a blank line for spacing
 
 if __name__ == "__main__":
     try:
