@@ -66,10 +66,25 @@ BEGIN
     
     IF v_counterparty_address IS NOT NULL THEN
         SELECT
+            # COALESCE(SUM(
+            #     CASE
+            #         WHEN transaction_type IN ('DEPOSIT', 'TRANSFER_IN') THEN shares_amount
+            #         WHEN transaction_type IN ('WITHDRAWAL', 'TRANSFER_OUT') THEN -shares_amount
+            #         ELSE 0
+            #     END
+            # ), 0)
             COALESCE(SUM(
                 CASE
+                    -- These events INCREASE a user's total position
                     WHEN transaction_type IN ('DEPOSIT', 'TRANSFER_IN') THEN shares_amount
+                    
+                    -- These events DECREASE a user's total position
                     WHEN transaction_type IN ('WITHDRAWAL', 'TRANSFER_OUT') THEN -shares_amount
+                    
+                    -- CRITICAL: Staking/unstaking events DO NOT change the total position,
+                    -- so they are treated as a change of 0.
+                    WHEN transaction_type IN ('STAKE_TO_POOL', 'UNSTAKE_FROM_POOL') THEN 0
+                    
                     ELSE 0
                 END
             ), 0)

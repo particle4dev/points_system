@@ -8,6 +8,19 @@ import sys
 import uuid
 from datetime import datetime
 
+"""
+Test Script for Vault Position Trigger (Complex Scenario)
+---------------------------------------------------------
+This script simulates a realistic, multi-user scenario to validate the PostgreSQL
+trigger that keeps the `vaults_user_position` table synchronized with the
+`vaults_user_position_history` table.
+
+The test demonstrates that the trigger correctly calculates the `total_shares` for
+multiple users as they deposit, withdraw, and transfer yield-bearing tokens,
+even as the token's underlying value changes. All database transactions are
+rolled back at the end to ensure the test is non-destructive.
+"""
+
 # Add the project root to the python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
@@ -52,7 +65,21 @@ def print_position_summary(session, user_address: str, vault_id: uuid.UUID, user
 def test_complex_vault_scenario_with_trigger():
     """
     Simulates a multi-user scenario with deposits, withdrawals, and transfers
-    to test the database trigger's accuracy. Rolls back all changes at the end.
+    to test the database trigger's accuracy. All changes are rolled back at the end.
+    
+    Test Case Narrative:
+    1.  SETUP: A new vault for "HYPE" (asset) and "haHype" (shares) is created.
+    2.  DEPOSIT 1 (Alice): Alice deposits 1000 HYPE when 1 haHype = 1.00 HYPE.
+        -> Alice's balance should be 1000 haHype.
+    3.  PRICE CHANGE: The vault generates yield, price of haHype increases.
+    4.  DEPOSIT 2 (Bob): Bob deposits 525 HYPE when 1 haHype = 1.05 HYPE.
+        -> Bob's balance should be 500 haHype.
+    5.  WITHDRAWAL (Alice): Price increases again. Alice withdraws 100 haHype.
+        -> Alice's balance should be 900 haHype.
+    6.  TRANSFER (Alice to Bob): Alice sends 200 haHype directly to Bob.
+        -> Alice's final balance should be 700 haHype.
+        -> Bob's final balance should be 700 haHype.
+    7.  CLEANUP: The database transaction is rolled back.
     """
     # --- Test Configuration ---
     ALICE_WALLET = "0xA11ce00000000000000000000000000000000001"

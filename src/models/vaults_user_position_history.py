@@ -1,3 +1,4 @@
+# src/models/vaults_user_position_history.py
 from typing import Optional
 from sqlmodel import SQLModel, Field
 from enum import Enum
@@ -8,8 +9,14 @@ class PositionHistoryType(str, Enum):
     """Defines the type of event that changed the user's position."""
     DEPOSIT = "DEPOSIT"
     WITHDRAWAL = "WITHDRAWAL"
+    
+    # A true transfer where ownership changes
     TRANSFER_IN = "TRANSFER_IN"
     TRANSFER_OUT = "TRANSFER_OUT"
+    
+    # A transfer to an approved pool where the user retains ownership
+    STAKE_TO_POOL = "STAKE_TO_POOL"
+    UNSTAKE_FROM_POOL = "UNSTAKE_FROM_POOL"
 
 class VaultsUserPositionHistory(SQLModel, table=True):
     __tablename__ = "vaults_user_position_history"
