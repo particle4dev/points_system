@@ -1,4 +1,5 @@
 # src/models/vaults_user_position.py
+
 from typing import Optional
 from sqlmodel import SQLModel, Field
 from uuid import UUID
