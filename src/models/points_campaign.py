@@ -28,7 +28,7 @@ class PointsCampaign(SQLModel, table=True):
     partner_slug: str = Field(nullable=False)
     
     # The specific pool address this campaign is associated with (if any)
-    pool_address: str = Field(nullable=False)
+    pool_address: str = Field(nullable=True)
 
     tags: List[str] = Field(
         default_factory=list,

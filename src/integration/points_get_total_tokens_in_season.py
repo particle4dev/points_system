@@ -11,6 +11,7 @@ from decimal import Decimal
 from typing import Optional
 
 import click
+
 # Add the project root to the python path to allow imports from `src`
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
