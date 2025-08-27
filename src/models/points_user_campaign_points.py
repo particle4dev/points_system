@@ -27,6 +27,9 @@ class PointsUserCampaignPoints(SQLModel, table=True):
     
     # Foreign key to the type of point that was awarded.
     point_type_slug: str = Field(foreign_key="points_point_types.slug", index=True, nullable=False)
+
+    # Denormalized from the campaign for easier querying.
+    partner_slug: str = Field(index=True, nullable=False)
     
     # The total points earned from this specific campaign.
     points_earned: Decimal = Field(
