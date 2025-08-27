@@ -111,6 +111,29 @@ def calculate_pnl_for_user(session, user_address: str, vault_id: uuid.UUID, curr
         realized_pnl=realized_pnl
     )
 
+def print_user_history(session, user_address: str, vault_id: uuid.UUID, user_name: str):
+    """Queries and prints the chronological transaction history for a user."""
+    print(f"\n--- Transaction History for {user_name} ---")
+    
+    history_statement = (
+        select(VaultsUserPositionHistory)
+        .where(VaultsUserPositionHistory.user_address == user_address)
+        .where(VaultsUserPositionHistory.vault_id == vault_id)
+        .order_by(VaultsUserPositionHistory.timestamp)
+    )
+    history_records = session.exec(history_statement).all()
+
+    if not history_records:
+        print("  No history found.")
+        return
+
+    for tx in history_records:
+        ts = tx.timestamp.strftime('%Y-%m-%d')
+        tx_type = tx.transaction_type.value.ljust(12) # Pad for alignment
+        shares = f"{tx.shares_amount:,.2f} haHype".rjust(16)
+        price = f"@ {tx.share_price_at_transaction:.2f} HYPE".ljust(12)
+        print(f"  {ts} | {tx_type} | {shares} {price}")
+
 
 # --- The Main Scenario Function ---
 
@@ -140,8 +163,15 @@ def run_pnl_report_scenario():
                 VaultsUserPositionHistory(user_address=ALICE_WALLET, vault_id=TEST_VAULT_ID, transaction_hash="0xa4", timestamp=datetime(2025, 3, 10), transaction_type=PositionHistoryType.WITHDRAWAL, shares_amount=300.0, share_price_at_transaction=1.50, asset_amount=450.0)
             ]
             session.add_all(history)
+
+            # --- 2. Display the historical data that will be used for calculation ---
+            print("\n==============================================")
+            print("         TRANSACTION HISTORY LOG        ")
+            print("==============================================")
+            print_user_history(session, ALICE_WALLET, TEST_VAULT_ID, "Alice")
+            print_user_history(session, BOB_WALLET, TEST_VAULT_ID, "Bob")
             
-            # --- 2. Run the PnL Calculation ---
+            # --- 3. Run the PnL Calculation ---
             # Assume the current haHype price is now 1.60 HYPE
             current_hahype_price = 1.60
             
@@ -149,7 +179,7 @@ def run_pnl_report_scenario():
             alice_pnl = calculate_pnl_for_user(session, ALICE_WALLET, TEST_VAULT_ID, current_hahype_price)
             bob_pnl = calculate_pnl_for_user(session, BOB_WALLET, TEST_VAULT_ID, current_hahype_price)
 
-            # --- 3. Display Final Calculated Results ---
+            # --- 4. Display Final Calculated Results ---
             print("\n==============================================")
             print("         PNL REPORTING RESULTS        ")
             print("==============================================")
