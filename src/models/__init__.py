@@ -20,6 +20,7 @@ from .partner_uniswapv3_tick import PartnerUniswapV3Tick
 from .partner_pool_uniswapv3 import PartnerPoolUniswapV3
 from .partner_user_position import PartnerUserPosition
 # from .partner_protocol_event import PartnerProtocolEvent
+from .partner_protocol_snapshot import PartnerProtocolSnapshot
 from .points_campaign import PointsCampaign
 from .points_point_type import PointsPointType
 from .points_user_campaign_points import PointsUserCampaignPoints
@@ -40,6 +41,7 @@ __all__ = [
     # "PartnerUniswapV3Event",
     "PartnerUserPosition",
     # "PartnerProtocolEvent",
+    "PartnerProtocolSnapshot",
     "PointsCampaign",
     "PointsPointType",
     "PointsUserCampaignPoints",
