@@ -37,7 +37,6 @@ def upgrade() -> None:
         sa.Column('quantity_type', quantity_type_enum, nullable=False),
         
         sa.Column('quantity', sa.Numeric(precision=78, scale=0), server_default='0', nullable=False),
-        sa.Column('quantity_usd', sa.Numeric(precision=36, scale=18), server_default='0', nullable=False),
         sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
         sa.PrimaryKeyConstraint('id'),

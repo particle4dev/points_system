@@ -1,5 +1,4 @@
 # python-training/lessons/points_system/src/models/partner_user_position.py
-# python-training/lessons/points_system/src/models/partner_user_position.py
 
 from datetime import datetime
 from decimal import Decimal
@@ -9,17 +8,7 @@ from uuid import UUID, uuid4
 import sqlalchemy as sa
 from sqlmodel import Field, SQLModel
 
-class ProtocolType(str, Enum):
-    """ High-level category of the protocol for application logic. """
-    DEX_UNISWAPV3 = "DEX_UNISWAPV3"
-    LENDING_HYPURRFI = "LENDING_HYPURRFI"
-    YIELD_PENDLE = "YIELD_PENDLE"
-
-class QuantityType(str, Enum):
-    """ The specific type of financial activity that earns points. """
-    LP = "LP"
-    YT = "YT"
-    BORROW = "BORROW"
+from .enums import ProtocolType, QuantityType
 
 class PartnerUserPosition(SQLModel, table=True):
     """
@@ -49,12 +38,6 @@ class PartnerUserPosition(SQLModel, table=True):
     quantity: Decimal = Field(
         default=0,
         sa_column=sa.Column(sa.Numeric(78, 0), nullable=False, server_default="0")
-    )
-    
-    # The current total value of this activity in USD.
-    quantity_usd: Decimal = Field(
-        default=0,
-        sa_column=sa.Column(sa.Numeric(36, 18), nullable=False, server_default="0")
     )
     
     created_at: datetime = Field(

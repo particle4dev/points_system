@@ -39,7 +39,6 @@ def upgrade() -> None:
     sa.Column('quantity_type', sa.Enum('LP', 'YT', 'BORROW', name='quantitytype', create_type=False), nullable=False),
 
     sa.Column('quantity_change', sa.Numeric(precision=78, scale=0), nullable=False),
-    sa.Column('quantity_change_usd', sa.Numeric(precision=36, scale=18), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )

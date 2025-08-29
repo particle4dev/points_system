@@ -32,9 +32,6 @@ class PartnerProtocolEvent(SQLModel, table=True):
     # The change in raw token quantity for this event (e.g., in wei).
     quantity_change: Decimal = Field(sa_column=sa.Column(sa.Numeric(78, 0), nullable=False))
 
-    # The delta for this event in USD.
-    quantity_change_usd: Decimal = Field(sa_column=sa.Column(sa.Numeric(36, 18), nullable=False))
-
     created_at: datetime = Field(
         default_factory=datetime.utcnow,
         nullable=False,
