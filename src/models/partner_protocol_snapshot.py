@@ -1,36 +1,24 @@
 # src/models/partner_protocol_snapshot.py
+
 from datetime import datetime
 from decimal import Decimal
-from enum import Enum
 from uuid import UUID, uuid4
 
 import sqlalchemy as sa
 from sqlmodel import Field, SQLModel
 
-class ProtocolType(str, Enum):
-    """ High-level category of the protocol for application logic. """
-    DEX_UNISWAPV3 = "DEX_UNISWAPV3"
-    LENDING_HYPURRFI = "LENDING_HYPURRFI"
-    YIELD_PENDLE = "YIELD_PENDLE"
-
-class QuantityType(str, Enum):
-    """ The specific type of financial activity that earns points. """
-    LP = "LP"
-    YT = "YT"
-    BORROW = "BORROW"
+from .enums import ProtocolType, QuantityType # Import from shared file
 
 class PartnerProtocolSnapshot(SQLModel, table=True):
     """
-    Stores a snapshot of a user's position for a specific token within a
-    partner protocol at a given point in time. This is used to optimize
-    the process of calculating the current state in PartnerUserPosition.
+    Stores a historical, point-in-time snapshot of a user's position.
+    This table is the source of truth in a snapshot-based architecture.
     """
     __tablename__ = "partner_protocol_snapshot"
+
+    # A composite index is highly recommended for querying the latest snapshot
     __table_args__ = (
-        sa.UniqueConstraint(
-            "wallet_address", "protocol_slug", "quantity_type", "token_address", "block_number",
-            name="uq_user_protocol_token_block"
-        ),
+        sa.Index("ix_snapshot_position_time", "wallet_address", "protocol_slug", "quantity_type", "token_address", "block_number"),
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -41,7 +29,7 @@ class PartnerProtocolSnapshot(SQLModel, table=True):
     token_address: str = Field(index=True, nullable=False)
 
     # The block number at which this snapshot was taken.
-    block_number: int = Field(nullable=False, index=True)
+    block_number: int = Field(nullable=False)
     
     # The timestamp of the block at which this snapshot was taken.
     timestamp: datetime = Field(nullable=False, index=True)
@@ -51,10 +39,6 @@ class PartnerProtocolSnapshot(SQLModel, table=True):
         default=0,
         sa_column=sa.Column(sa.Numeric(78, 0), nullable=False, server_default="0")
     )
-
-    # The transaction hash of the last event processed to create this snapshot.
-    # This is useful for determining which events to replay since the snapshot.
-    last_processed_tx_hash: str = Field(nullable=True)
     
     created_at: datetime = Field(
         default_factory=datetime.utcnow,
