@@ -1,5 +1,4 @@
-# python-training/lessons/points_system/src/models/partner_user_position.py
-
+# src/models/partner_protocol_snapshot.py
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
@@ -20,17 +19,17 @@ class QuantityType(str, Enum):
     YT = "YT"
     BORROW = "BORROW"
 
-class PartnerUserPosition(SQLModel, table=True):
+class PartnerProtocolSnapshot(SQLModel, table=True):
     """
-    Consolidated table storing the CURRENT USD VALUE and raw quantity of a user's 
-    specific pointable activity for a specific token within a given partner protocol.
+    Stores a snapshot of a user's position for a specific token within a
+    partner protocol at a given point in time. This is used to optimize
+    the process of calculating the current state in PartnerUserPosition.
     """
-    __tablename__ = "partner_user_position"
+    __tablename__ = "partner_protocol_snapshot"
     __table_args__ = (
-        # A user can have one position per token for a given activity type and protocol.
         sa.UniqueConstraint(
-            "wallet_address", "protocol_slug", "quantity_type", "token_address", 
-            name="uq_user_protocol_quantity_token"
+            "wallet_address", "protocol_slug", "quantity_type", "token_address", "block_number",
+            name="uq_user_protocol_token_block"
         ),
     )
 
@@ -39,24 +38,26 @@ class PartnerUserPosition(SQLModel, table=True):
     protocol_slug: str = Field(index=True, nullable=False)
     protocol_type: ProtocolType = Field(sa_column=sa.Column(sa.Enum(ProtocolType), nullable=False))
     quantity_type: QuantityType = Field(sa_column=sa.Column(sa.Enum(QuantityType), nullable=False, index=True))
-    
-    # The specific token this position is for.
-    # token_address: str = Field(foreign_key="tokens.address", index=True, nullable=False)
-    token_address: str = Field(index=False, nullable=False)
+    token_address: str = Field(index=True, nullable=False)
 
-    # The current raw token quantity (e.g., in wei).
+    # The block number at which this snapshot was taken.
+    block_number: int = Field(nullable=False, index=True)
+    
+    # The timestamp of the block at which this snapshot was taken.
+    timestamp: datetime = Field(nullable=False, index=True)
+
+    # The raw token quantity at the time of the snapshot.
     quantity: Decimal = Field(
         default=0,
         sa_column=sa.Column(sa.Numeric(78, 0), nullable=False, server_default="0")
     )
+
+    # The transaction hash of the last event processed to create this snapshot.
+    # This is useful for determining which events to replay since the snapshot.
+    last_processed_tx_hash: str = Field(nullable=True)
     
     created_at: datetime = Field(
         default_factory=datetime.utcnow,
         nullable=False,
         sa_column_kwargs={"server_default": sa.func.now()},
-    )
-    updated_at: datetime = Field(
-        default_factory=datetime.utcnow,
-        nullable=False,
-        sa_column_kwargs={"server_default": sa.func.now(), "onupdate": sa.func.now()},
     )

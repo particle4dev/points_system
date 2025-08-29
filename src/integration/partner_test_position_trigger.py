@@ -37,7 +37,7 @@ def print_position_for_user(session, wallet_address: str):
     for record in records:
         print(f"  - Protocol: {record.protocol_slug} | Type: {record.quantity_type.value}")
         print(f"    Token: {record.token_address}")
-        print(f"    Raw Quantity: {record.quantity} | USD Value: {record.quantity_usd:.2f}")
+        print(f"    Raw Quantity: {record.quantity}")
 
 # --- The Main Test Function ---
 
@@ -80,7 +80,7 @@ def test_partner_position_trigger():
                 wallet_address=ALICE_WALLET, protocol_slug=HYPERSWAP_SLUG,
                 protocol_type=ProtocolType.DEX_UNISWAPV3, quantity_type=QuantityType.LP,
                 token_address=HYPERSWAP_POOL_ADDRESS,
-                quantity_change=Decimal("100000"), quantity_change_usd=Decimal("10000.00")
+                quantity_change=Decimal("100000")
             )
             session.add(alice_deposit)
             session.commit()
@@ -95,7 +95,7 @@ def test_partner_position_trigger():
                 wallet_address=ALICE_WALLET, protocol_slug=HYPERSWAP_SLUG,
                 protocol_type=ProtocolType.DEX_UNISWAPV3, quantity_type=QuantityType.LP,
                 token_address=HYPERSWAP_POOL_ADDRESS,
-                quantity_change=Decimal("-100000"), quantity_change_usd=Decimal("-10000.00")
+                quantity_change=Decimal("-100000")
             )
             session.add(alice_withdrawal)
             session.commit()
@@ -110,7 +110,7 @@ def test_partner_position_trigger():
                 wallet_address=BOB_WALLET, protocol_slug=HYPERSWAP_SLUG,
                 protocol_type=ProtocolType.DEX_UNISWAPV3, quantity_type=QuantityType.LP,
                 token_address=HYPERSWAP_POOL_ADDRESS,
-                quantity_change=Decimal("150000"), quantity_change_usd=Decimal("18000.00")
+                quantity_change=Decimal("150000")
             )
             session.add(bob_deposit)
             session.commit()
@@ -125,7 +125,7 @@ def test_partner_position_trigger():
                 wallet_address=ALICE_WALLET, protocol_slug=HYPURRFI_SLUG,
                 protocol_type=ProtocolType.LENDING_HYPURRFI, quantity_type=QuantityType.LP,
                 token_address=HYPE_TOKEN_ADDRESS,
-                quantity_change=Decimal("500000000000000000000"), quantity_change_usd=Decimal("500.00")
+                quantity_change=Decimal("500000000000000000000")
             )
             session.add(alice_hype_supply)
             session.commit()
@@ -140,7 +140,7 @@ def test_partner_position_trigger():
                 wallet_address=ALICE_WALLET, protocol_slug=HYPURRFI_SLUG,
                 protocol_type=ProtocolType.LENDING_HYPURRFI, quantity_type=QuantityType.LP,
                 token_address=STHYPE_TOKEN_ADDRESS,
-                quantity_change=Decimal("200000000000000000000"), quantity_change_usd=Decimal("220.00")
+                quantity_change=Decimal("200000000000000000000")
             )
             session.add(alice_sthype_supply)
             session.commit()
